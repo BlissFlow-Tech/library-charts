@@ -506,7 +506,7 @@ cronjob: {}
 job: {}
 
 # -- Set External Secrets
-external-secret: {}
+external-secrets: {}
   ## This is for using external-secrets resources usually for production use.
  #  - name: example-secret
  #    secretStoreRef:

@@ -77,7 +77,7 @@ spec:
   {{- range $entry := $k.data }}
   - secretKey: {{ $entry.secretKey }}
     remoteRef:
-      {{- include "common.remoteRef" (dict "remoteRef" $entry.remoteRef) | nindent 4 }}
+      {{- include "common.remoteRef" (dict "remoteRef" $entry.remoteRef) | nindent 6 }}
   {{- end }}
   {{- end }}
   {{- with $k.dataFrom }}
