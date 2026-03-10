@@ -1,6 +1,6 @@
 # common
 
-![Version: 4.9.0](https://img.shields.io/badge/Version-4.9.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square)
+![Version: 4.9.1](https://img.shields.io/badge/Version-4.9.1-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square)
 
 Function library for blissflow charts
 
@@ -77,7 +77,7 @@ N/A
 | enableServiceLinks | bool | `true` | Enable/disable the generation of environment variables for services. [[ref]](https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/#accessing-the-service) |
 | env | string | `nil` | Main environment variables. Template enabled. Syntax options: A) TZ: UTC B) PASSWD: '{{ .Release.Name }}' C) PASSWD:      configMapKeyRef:        name: config-map-name        key: key-name D) PASSWD:      valueFrom:        secretKeyRef:          name: secret-name          key: key-name      ... E) - name: TZ      value: UTC F) - name: TZ      value: '{{ .Release.Name }}' |
 | envFrom | list | `[]` | Secrets and/or ConfigMaps that will be loaded as environment variables. [[ref]](https://unofficial-kubernetes.readthedocs.io/en/latest/tasks/configure-pod-container/configmap/#use-case-consume-configmap-in-environment-variables) |
-| external-secret | object | `{}` | Set External Secrets |
+| external-secrets | object | `{}` | Set External Secrets |
 | extraDeploy | object | `{}` | Additional extra resources to deploy |
 | global.annotations | object | `{}` | Set additional global annotations. Helm templates can be used. |
 | global.fullnameOverride | string | `nil` | Set the entire name definition |
