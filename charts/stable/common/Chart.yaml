@@ -2,7 +2,7 @@ apiVersion: v2
 name: common
 description: Function library for blissflow charts
 type: library
-version: 4.9.0
+version: 4.9.1
 kubeVersion: ">=1.16.0-0"
 keywords:
   - blissflow
