@@ -42,6 +42,8 @@ image:
   repository:
   # -- image tag
   tag:
+  # -- image digest
+  digest:
   # -- image pull policy
   pullPolicy:
 

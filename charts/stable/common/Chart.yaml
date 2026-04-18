@@ -2,12 +2,12 @@ apiVersion: v2
 name: common
 description: Function library for blissflow charts
 type: library
-version: 4.9.1
+version: 4.10.0
 kubeVersion: ">=1.16.0-0"
 keywords:
-  - blissflow
-  - common
+- blissflow
+- common
 home: https://github.com/blissflow/library-charts/tree/main/stable/common
 maintainers:
-  - name: amos-85
-    email: contact@blissflow.tech
+- name: amos-85
+  email: contact@blissflow.tech

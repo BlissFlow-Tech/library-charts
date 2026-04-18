@@ -1,7 +1,7 @@
 {{- /* The main container included in the controller */ -}}
 {{- define "common.controller.mainContainer" -}}
 - name: {{ include "common.names.fullname" . }}
-  image: {{ printf "%s:%s" .Values.image.repository (default .Chart.AppVersion .Values.image.tag) | quote }}
+  image: {{ printf "%s%s" .Values.image.repository (empty .Values.image.digest | ternary (printf ":%s" (default .Chart.AppVersion .Values.image.tag)) (printf "@%s" .Values.image.digest)) | quote }}
   imagePullPolicy: {{ .Values.image.pullPolicy }}
   {{- with .Values.command }}
   command:
