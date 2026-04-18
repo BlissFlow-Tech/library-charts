@@ -1,27 +1,21 @@
-{{- /* The Gateway resource for the tenant */ -}}
-{{- define "common.gateway" -}}
-apiVersion: gateway.networking.k8s.io/v1
-kind: Gateway
-metadata:
-  name: {{ .Values.gateway.name | default (printf "tenant-%s-gw" .Values.tenant) }}
-  labels: {{ include "common.labels" . | nindent 4 }}
-  annotations:
-    cert-manager.io/cluster-issuer: {{ .Values.gateway.issuer | default "letsencrypt-production" }}
-    {{- with .Values.gateway.annotations }}
-    {{- toYaml . | nindent 4 }}
-    {{- end }}
-spec:
-  gatewayClassName: {{ .Values.gateway.className | default "merged-eg" }}
-  listeners:
-  - name: https
-    port: 443
-    protocol: HTTPS
-    hostname: {{ printf "%s.%s" .Values.tenant .Values.dns.public_zone.name | quote }}
-    tls:
-      mode: Terminate
-      certificateRefs:
-      - name: {{ .Values.gateway.tlsName | default (printf "tenant-%s-tls" .Values.tenant) }}
-    allowedRoutes:
-      namespaces:
-        {{- toYaml (.Values.gateway.allowedRoutes.namespaces | default (dict "from" "Same")) | nindent 10 }}
-{{- end -}}
+{{- range $name, $gateway := .Values.gateways }}
+  {{- if $gateway.enabled -}}
+    {{- /* If this is not the first enabled gateway in the loop,
+       we need a separator to prevent YAML corruption.
+    */ -}}
+---
+    {{- /* 1. Prepare the ObjectValues specifically for this gateway instance.
+       2. Use 'merge' to allow the library to access global Values/Chart context.
+    */ -}}
+    {{- $gatewayValues := $gateway -}}
+
+    {{- /* Handle name override logic similar to your Ingress pattern */ -}}
+    {{- if and (not $gatewayValues.nameOverride) (ne $name "primary") -}}
+      {{- $_ := set $gatewayValues "nameOverride" (printf "%s-%s" (include "common.names.fullname" $) $name) -}}
+    {{- end -}}
+
+    {{- /* Create the context and call the library class */ -}}
+    {{- $gatewayCtx := dict "Values" $ "Chart" $.Chart "Release" $.Release "ObjectValues" (dict "gateway" $gatewayValues) -}}
+    {{- include "common.classes.gateway" $gatewayCtx -}}
+  {{- end }}
+{{- end }}
