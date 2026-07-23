@@ -255,7 +255,7 @@ probes:
     spec:
       initialDelaySeconds: 0
       timeoutSeconds: 1
-      ## This means it has a maximum of 5*30=150 seconds to start up before it fails
+      ## This means it has a maximum of  5*30=150 seconds to start up before it fails
       periodSeconds: 5
       failureThreshold: 30
 
@@ -531,3 +531,41 @@ external-secrets: {}
 
 # -- Additional extra resources to deploy
 extraDeploy: {}
+
+# -- Gateway api configuration - support multiple gateway
+gateways:
+  public:
+    enabled: false
+    className: cilium
+    listeners:
+    - hostname: app.example.com
+
+# -- Gateway httproute configuration -  support multiple httproutes
+httproutes:
+  frontend:
+    enabled: fales
+    gatewayName: public
+    hostnames:
+    - app.example.com
+
+vpas:
+  default:
+    enabled: false
+    annotations:
+      test: test
+    updatePolicy:
+      updateMode: Auto
+    targetRef:
+      kind: Deployment
+    resourcePolicy:
+      containerPolicies:
+      - containerName: "*"
+        controlledResources:
+        - cpu
+        - memory
+        minAllowed:
+          cpu: 100m
+          memory: 128Mi
+        maxAllowed:
+          cpu: 2
+          memory: 2Gi

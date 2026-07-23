@@ -76,3 +76,39 @@ external-secrets:
     dataFrom:
       - extract:
           key: shared/secrets
+
+gateways:
+  public:
+    enabled: true
+    className: cilium
+    listeners:
+    - hostname: app.example.com
+
+httproutes:
+  frontend:
+    enabled: true
+    gatewayName: public
+    hostnames:
+    - app.example.com
+
+vpas:
+  default:
+    annotations:
+      test: test
+    enabled: true
+    updatePolicy:
+      updateMode: Auto
+    targetRef:
+      kind: Deployment
+    resourcePolicy:
+      containerPolicies:
+      - containerName: "*"
+        controlledResources:
+        - cpu
+        - memory
+        minAllowed:
+          cpu: 100m
+          memory: 128Mi
+        maxAllowed:
+          cpu: 2
+          memory: 2Gi
