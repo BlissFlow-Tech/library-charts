@@ -1,36 +1,55 @@
-{{/* Generic HTTPRoute Class */}}
+{{/*
+Generic HTTPRoute Class
+*/}}
+
 {{- define "common.classes.httproute" -}}
-{{- $values := .ObjectValues.route -}}
----
+{{- $values := .ObjectValues.route }}
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
   name: {{ $values.nameOverride }}
-  {{- with $values.annotations }}
   annotations:
-    {{- toYaml . | nindent 4 }}
+  {{- include "common.annotations" $ | nindent 4 }}
+  {{- with $values.annotations }}
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+  {{- include "common.labels" $ | nindent 4 }}
+    {{- with $values.labels }}
+  {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
   parentRefs:
-    - name: {{ $values.gatewayName | required "route.gatewayName is required" }}
-      sectionName: {{ $values.parentSection | default "https" }}
+  - name: {{ required "route.gatewayName is required" $values.gatewayName }}
+    sectionName: {{ default "https" $values.parentSection }}
   hostnames:
-    {{- range ($values.hostnames | required "route.hostnames list is required") }}
-    - {{ . | quote }}
-    {{- end }}
+  {{- range required "route.hostnames is required" $values.hostnames }}
+  - {{ . | quote }}
+  {{- end }}
+{{- if $values.rules }}
   rules:
-    - matches:
-        {{- if $values.matches }}
-        {{- toYaml $values.matches | nindent 8 }}
-        {{- else }}
-        - path:
-            type: {{ $values.pathType | default "PathPrefix" }}
-            value: {{ $values.path | default "/" }}
-        {{- end }}
-      backendRefs:
-        - group: {{ $values.backendGroup | default "" | quote }}
-          kind: {{ $values.backendKind | default "Service" | quote }}
-          name: {{ $values.serviceName | default (include "common.names.fullname" .) }}
-          port:
-            port: {{ $values.servicePort | default $.Values.service.port | default 80 }}
-{{- end -}}
+{{ toYaml $values.rules | nindent 4 }}
+{{- else }}
+  rules:
+  - matches:
+{{- if $values.matches }}
+{{ toYaml $values.matches | nindent 8 }}
+{{- else }}
+    - path:
+        type: {{ default "PathPrefix" $values.pathType }}
+        value: {{ default "/" $values.path }}
+{{- end }}
+    backendRefs:
+    - name: {{ default (include "common.names.fullname" .) $values.serviceName }}
+      {{- with $values.backendGroup }}
+      group: {{ . }}
+      {{- end }}
+      {{- with $values.backendKind }}
+      kind: {{ . }}
+      {{- end }}
+      port: {{ default (default 80 $.Values.service.port) $values.servicePort }}
+      {{- with $values.weight }}
+      weight: {{ . }}
+      {{- end }}
+{{- end }}
+{{- end }}

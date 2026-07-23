@@ -255,7 +255,7 @@ probes:
     spec:
       initialDelaySeconds: 0
       timeoutSeconds: 1
-      ## This means it has a maximum of 5*30=150 seconds to start up before it fails
+      ## This means it has a maximum of  5*30=150 seconds to start up before it fails
       periodSeconds: 5
       failureThreshold: 30
 
