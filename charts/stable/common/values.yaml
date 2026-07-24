@@ -541,7 +541,7 @@ gateway:
 
 # -- Gateway httproute configuration
 httproute:
-  enabled: fales
+  enabled: false
   gatewayName: public
   hostnames:
   - app.example.com
