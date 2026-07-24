@@ -1,24 +1,10 @@
 {{/*
-Renders HTTPRoute resources
+Renders the HTTPRoute resource
 */}}
 {{- define "common.httproute" -}}
-{{- range $name, $route := $.Values.httproutes }}
+{{- $route := default (dict) .Values.httproute }}
 {{- if $route.enabled }}
-{{- $routeValues := deepCopy $route }}
-{{- if not $routeValues.nameOverride }}
-{{- $_ := set $routeValues "nameOverride" (printf "%s-%s" (include "common.names.fullname" $) $name) }}
-{{- end }}
-{{- $ctx := dict
-    "Values" $.Values
-    "Chart" $.Chart
-    "Release" $.Release
-    "Capabilities" $.Capabilities
-    "Files" $.Files
-    "Template" $.Template
-    "ObjectValues" (dict "route" $routeValues)
-}}
 ---
-{{ include "common.classes.httproute" $ctx }}
-{{- end }}
+{{ include "common.classes.httproute" . }}
 {{- end }}
 {{- end }}

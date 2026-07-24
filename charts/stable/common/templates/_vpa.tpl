@@ -1,24 +1,9 @@
 {{/*
-Renders VerticalPodAutoscaler resources
+Renders the VerticalPodAutoscaler resource
 */}}
 {{- define "common.vpa" -}}
-{{- range $name, $vpa := $.Values.vpas }}
-{{- if $vpa.enabled }}
-{{- $values := deepCopy $vpa }}
-{{- if not $values.nameOverride }}
-{{- $_ := set $values "nameOverride" (printf "%s-%s" (include "common.names.fullname" $) $name) }}
-{{- end }}
-{{- $ctx := dict
-    "Values" $.Values
-    "Chart" $.Chart
-    "Release" $.Release
-    "Capabilities" $.Capabilities
-    "Files" $.Files
-    "Template" $.Template
-    "VPA" $values
-}}
+{{- if .Values.vpa.enabled }}
 ---
-{{ include "common.classes.vpa" $ctx }}
-{{- end }}
+{{ include "common.classes.vpa" . }}
 {{- end }}
 {{- end }}
