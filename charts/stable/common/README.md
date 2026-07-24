@@ -87,7 +87,7 @@ N/A
 | hostAliases | list | `[]` | Use hostAliases to add custom entries to /etc/hosts - mapping IP addresses to hostnames. [[ref]](https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/) |
 | hostNetwork | bool | `false` | When using hostNetwork make sure you set dnsPolicy to `ClusterFirstWithHostNet` |
 | hostname | string | `nil` | Allows specifying explicit hostname setting |
-| httproute | object | `{"enabled":"fales","gatewayName":"public","hostnames":["app.example.com"]}` | Gateway httproute configuration |
+| httproute | object | `{"enabled":false,"gatewayName":"public","hostnames":["app.example.com"]}` | Gateway httproute configuration |
 | image.digest | string | `nil` | image digest |
 | image.pullPolicy | string | `nil` | image pull policy |
 | image.repository | string | `nil` | image repository |
