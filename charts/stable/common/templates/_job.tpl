@@ -14,8 +14,8 @@ metadata:
   {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  {{- with $job.backoffLimit }}
-  backoffLimit: {{ . }}
+  {{- if not (kindIs "invalid" $job.backoffLimit) }}
+  backoffLimit: {{ $job.backoffLimit }}
   {{- end }}
   {{- with $job.activeDeadlineSeconds }}
   activeDeadlineSeconds: {{ . }}
@@ -85,7 +85,7 @@ spec:
         {{- end }}
         {{- with $job.resources }}
         resources:
-        {{- toYaml . | nindent 8 }}
+          {{- toYaml . | nindent 10 }}
         {{- end }}
         {{- with $job.volumeMounts }}
         volumeMounts:

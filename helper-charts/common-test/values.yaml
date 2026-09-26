@@ -105,3 +105,24 @@ vpa:
       maxAllowed:
         cpu: 2
         memory: 2Gi
+
+job:
+  my-task: # Becomes the Job's metadata.name
+    name: task-worker # Becomes the container name
+    restartPolicy: OnFailure
+
+    # 1. Backoff Limit (Specifies the number of retries before considering a Job as failed)
+    backoffLimit: 4
+
+    image:
+      repository: my-app/job-runner
+      tag: "v1.0.0"
+
+    # 2. Resources Block (Requests and limits for CPU and Memory)
+    resources:
+      requests:
+        cpu: "250m"
+        memory: "256Mi"
+      limits:
+        cpu: "1000m"
+        memory: "1Gi"
