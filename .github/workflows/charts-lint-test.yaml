@@ -1,11 +1,12 @@
 name: "Charts: Lint and test"
 
+# Runs on every PR (not path-filtered) because its jobs are required status
+# checks on main; lint/install skip themselves when no chart changed.
+# workflow_dispatch lets the release workflow run it on release-please PRs,
+# which don't trigger pull_request events.
 on:
   pull_request:
-    paths:
-    - '.github/workflows/charts-lint-test.yaml'
-    - 'charts/**'
-    - 'helper-charts/**'
+  workflow_dispatch:
 
 jobs:
   lint:
@@ -15,21 +16,21 @@ jobs:
       changed: ${{ steps.list-changed.outputs.changed }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         fetch-depth: 0
 
     - name: Install Helm
-      uses: azure/setup-helm@v4
+      uses: azure/setup-helm@v5
       with:
         version: v3.17.3
 
-    - uses: actions/setup-python@v5
+    - uses: actions/setup-python@v7
       with:
-        python-version: 3.8
+        python-version: "3.12"
 
     - name: Set up chart-testing
-      uses: helm/chart-testing-action@v2.7.0
+      uses: helm/chart-testing-action@v2.8.0
 
     - name: Run chart-testing (list-changed)
       id: list-changed
@@ -51,12 +52,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         fetch-depth: 0
 
     - name: Install Helm
-      uses: azure/setup-helm@v4
+      uses: azure/setup-helm@v5
       with:
         version: v3.17.3
 
@@ -73,24 +74,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         fetch-depth: 0
 
     - name: Install Helm
-      uses: azure/setup-helm@v4
+      uses: azure/setup-helm@v5
       with:
         version: v3.17.3
 
-    - uses: actions/setup-python@v5
+    - uses: actions/setup-python@v7
       with:
-        python-version: 3.8
+        python-version: "3.12"
 
     - name: Set up chart-testing
-      uses: helm/chart-testing-action@v2.7.0
+      uses: helm/chart-testing-action@v2.8.0
 
     - name: Create k3d cluster
-      uses: nolar/setup-k3d-k3s@v1
+      uses: nolar/setup-k3d-k3s@v1.1.0
       with:
         version: v1.33.0+k3s1
       if: needs.lint.outputs.changed == 'true'

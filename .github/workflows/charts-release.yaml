@@ -11,86 +11,11 @@ on:
       - '.release-please-manifest.json'
 
 jobs:
-  readme:
-    name: Regenerate chart READMEs
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Required for full git history
-          ref: ${{ github.ref }}
-
-      - uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          base: ${{ github.ref }}
-          list-files: shell
-          filters: |
-            addedOrModified:
-              - added|modified: 'charts/**'
-
-      - name: Install helm-docs
-        run: |
-          curl -sSL https://github.com/norwoodj/helm-docs/releases/download/v1.14.2/helm-docs_1.14.2_Linux_x86_64.tar.gz | tar xz
-          sudo mv helm-docs /usr/local/bin/
-
-      - name: Regenerate READMEs for changed charts
-        if: steps.filter.outputs.addedOrModified == 'true'
-        run: |
-          echo "🔍 Detecting changed chart paths..."
-          CHARTS=()
-          PATHS=(${{ steps.filter.outputs.addedOrModified_files }})
-          echo "Detected changed files: ${PATHS[@]}"
-          for i in "${PATHS[@]}"
-          do
-              if [[ "$i" != charts/* ]]; then
-                  continue
-              fi
-              IFS='/' read -r -a path_parts <<< "$i"
-              if [[ ${#path_parts[@]} -lt 3 ]]; then
-                  continue
-              fi
-              CHART_PATH="${path_parts[1]}/${path_parts[2]}"
-              CHARTS+=("$CHART_PATH")
-          done
-
-          CHARTS=( $(printf "%s\n" "${CHARTS[@]}" | sort -u) )
-
-          echo "📦 Changed charts:"
-          for i in "${CHARTS[@]}"; do
-            echo " - $i"
-          done
-
-          for i in "${CHARTS[@]}"
-          do
-              IFS='/' read -r -a chart_parts <<< "$i"
-              CATEGORY="${chart_parts[0]}"
-              NAME="${chart_parts[1]}"
-              CHART_DIR="charts/${CATEGORY}/${NAME}"
-              if [ -f "${CHART_DIR}/Chart.yaml" ]; then
-                echo "📄 Generating docs for chart: ${CATEGORY}/${NAME}"
-                ./hack/gen-helm-docs.sh "${CATEGORY}" "${NAME}"
-              else
-                echo "❌ Chart.yaml not found for ${CATEGORY}/${NAME}, skipping."
-              fi
-          done
-
-      - name: Commit and push README changes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: Auto-generate chart README [no ci]
-          file_pattern: charts/**/README.md
-          commit_user_name: github-actions
-          commit_user_email: github-actions@github.com
-
   release-please:
     name: Release PR / tag
     runs-on: ubuntu-latest
     permissions:
+      actions: write
       contents: write
       issues: write
       pull-requests: write
@@ -100,11 +25,46 @@ jobs:
     steps:
       # Opens/updates a release PR that bumps Chart.yaml and CHANGELOG.md from
       # Conventional Commit messages; merging it creates the tag and GitHub release.
-      - uses: googleapis/release-please-action@v4
+      - uses: googleapis/release-please-action@v5
         id: release
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+
+      - name: Checkout release PR branch
+        if: steps.release.outputs.prs_created == 'true'
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ fromJSON(steps.release.outputs.pr).headBranchName }}
+
+      # main is protected, so the README (version badge, values table) is
+      # regenerated in the release PR instead of being pushed to main.
+      - name: Regenerate chart README
+        if: steps.release.outputs.prs_created == 'true'
+        run: |
+          curl -sSL https://github.com/norwoodj/helm-docs/releases/download/v1.14.2/helm-docs_1.14.2_Linux_x86_64.tar.gz | tar xz helm-docs
+          sudo mv helm-docs /usr/local/bin/
+          ./hack/gen-helm-docs.sh stable common
+
+      - name: Commit README to release PR
+        if: steps.release.outputs.prs_created == 'true'
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "chore: regenerate chart README"
+          file_pattern: charts/**/README.md
+          commit_user_name: github-actions
+          commit_user_email: github-actions@github.com
+
+      # Pushes made with GITHUB_TOKEN don't trigger pull_request workflows, so
+      # run the required checks on the release PR explicitly.
+      - name: Run required checks on release PR
+        if: steps.release.outputs.prs_created == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ fromJSON(steps.release.outputs.pr).headBranchName }}
+        run: |
+          gh workflow run charts-lint-test.yaml --repo "$GITHUB_REPOSITORY" --ref "$BRANCH"
+          gh workflow run pre-commit-check.yaml --repo "$GITHUB_REPOSITORY" --ref "$BRANCH"
 
   publish:
     name: Publish chart
@@ -118,13 +78,13 @@ jobs:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout release tag
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           ref: ${{ needs.release-please.outputs.tag_name }}
 
       - name: Install Helm
-        uses: azure/setup-helm@v4
+        uses: azure/setup-helm@v5
         with:
           version: v3.17.3
 
