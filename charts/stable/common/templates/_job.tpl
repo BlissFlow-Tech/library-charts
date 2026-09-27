@@ -70,18 +70,18 @@ spec:
         imagePullPolicy: {{ $job.image.imagePullPolicy | default "Always" }}
         {{- with $job.env }}
         env:
-          {{- toYaml . | nindent 12 }}
+          {{- toYaml . | nindent 10 }}
         {{- end }}
         {{- with $job.envFrom }}
         envFrom:
-        {{- toYaml . | nindent 12 }}
+          {{- toYaml . | nindent 10 }}
         {{- end }}
         {{- with $job.command }}
-        command: {{- toYaml . | nindent 8 }}
+        command: {{- toYaml . | nindent 10 }}
         {{- end }}
         {{- with $job.args }}
         args:
-        {{- toYaml . | nindent 8 }}
+          {{- toYaml . | nindent 10 }}
         {{- end }}
         {{- with $job.resources }}
         resources:
@@ -89,23 +89,23 @@ spec:
         {{- end }}
         {{- with $job.volumeMounts }}
         volumeMounts:
-        {{- toYaml . | nindent 8 }}
+          {{- toYaml . | nindent 10 }}
         {{- end }}
       {{- with $job.nodeSelector }}
       nodeSelector:
-      {{- toYaml . | nindent 6 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with $job.affinity }}
       affinity:
-      {{- toYaml . | nindent 6 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with $job.tolerations }}
       tolerations:
-      {{- toYaml . | nindent 6 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with $job.volumes }}
       volumes:
-      {{- toYaml . | nindent 6 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
   {{- end }}
 {{- end }}

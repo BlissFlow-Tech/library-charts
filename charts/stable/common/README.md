@@ -195,7 +195,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### [4.10.1]
 
 #### Bugfix
-- Fix job indenetions
+- Job: render `backoffLimit: 0` instead of dropping it
+- Job: fix indentation of `resources`, `nodeSelector` and `affinity` (they rendered outside their parent keys)
 
 ### [4.10.0]
 
