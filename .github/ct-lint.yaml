@@ -1,6 +1,8 @@
 remote: origin
 target-branch: main
 helm-extra-args: --timeout 600s
+# Versions are bumped by release-please release PRs, not by feature PRs.
+check-version-increment: false
 chart-dirs:
 - charts/incubator
 - charts/stable

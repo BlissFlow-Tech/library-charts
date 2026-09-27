@@ -25,8 +25,7 @@ pulls:
 
         We have noticed that the chart documentation has not been completely updated for this PR.
         Could you please make sure that the following items have been updated:
-        - `version` in `Chart.yaml` has been updated per [semver](http://semver.org/)
-        - `README_CHANGELOG.md.gotmpl` contains a summary of the updates for this new version
+        - The PR title follows Conventional Commits (the chart version and changelog are updated automatically on release)
         - [Documentation strings](https://github.com/norwoodj/helm-docs#valuesyaml-metadata) have been added to the keys in `values.yaml`.
 
         Afterwards you can run `./hack/gen-helm-docs.sh stable <chart>` again to update the chart's `README.md` file.
@@ -36,8 +35,11 @@ pulls:
       comment: |
         :wave: @{{ pull_request.user.login }}, thanks for taking the time to submit this PR. 🙏🏽
 
-        We have noticed that the PR title does not adhere to our desired format.
-        Could you please make sure that it follows the pattern `[<lowercase chart name>] <Update description>`?
-        Example: `[radarr] Update image version`.
+        We have noticed that the PR title does not follow [Conventional Commits](https://www.conventionalcommits.org/).
+        PR titles become the squash-merge commit message, which release-please uses to pick the next chart version:
+        - `fix(common): ...` → patch release
+        - `feat(common): ...` → minor release
+        - `feat(common)!: ...` → major (breaking) release
+        - `docs:`, `chore:`, `ci:`, `test:` → no release
 
         Thanks!
