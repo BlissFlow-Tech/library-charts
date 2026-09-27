@@ -25,7 +25,8 @@ jobs:
             const creator = context.payload.pull_request.user.login;
 
             const isBot = creator.toLowerCase().includes('renovate');
-            const matchesFormat = /^\[[a-z0-9\-]+\]\s[A-Z0-9].+/.test(title);
+            // Conventional Commits: squash-merge titles drive release-please versioning
+            const matchesFormat = /^(feat|fix|perf|refactor|revert|docs|test|ci|build|chore)(\([a-z0-9\-]+\))?!?: \S.*/.test(title);
 
             if (!isBot && !matchesFormat) {
               const label = 'kind:incorrect-title';

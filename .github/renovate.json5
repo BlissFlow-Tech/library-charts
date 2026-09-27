@@ -1,5 +1,6 @@
 {
   "enabled": true,
+  "semanticCommits": "enabled",
   "dependencyDashboard": true,
   "dependencyDashboardTitle": "Renovate Dashboard",
   "assigneesFromCodeOwners": true,
