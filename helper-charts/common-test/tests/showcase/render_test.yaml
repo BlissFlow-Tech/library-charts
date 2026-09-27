@@ -1,0 +1,46 @@
+suite: showcase render
+templates:
+  - common.yaml
+values:
+  - showcase-values.yaml
+tests:
+  - it: all showcased features should render
+    asserts:
+      - hasDocuments:
+          count: 9
+      - containsDocument:
+          kind: Deployment
+          apiVersion: apps/v1
+          any: true
+      - containsDocument:
+          kind: Service
+          apiVersion: v1
+          any: true
+      - containsDocument:
+          kind: Ingress
+          apiVersion: networking.k8s.io/v1
+          any: true
+      - containsDocument:
+          kind: HorizontalPodAutoscaler
+          apiVersion: autoscaling/v2
+          any: true
+      - containsDocument:
+          kind: Job
+          apiVersion: batch/v1
+          any: true
+      - containsDocument:
+          kind: ExternalSecret
+          apiVersion: external-secrets.io/v1
+          any: true
+      - containsDocument:
+          kind: Gateway
+          apiVersion: gateway.networking.k8s.io/v1
+          any: true
+      - containsDocument:
+          kind: HTTPRoute
+          apiVersion: gateway.networking.k8s.io/v1
+          any: true
+      - containsDocument:
+          kind: VerticalPodAutoscaler
+          apiVersion: autoscaling.k8s.io/v1
+          any: true

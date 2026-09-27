@@ -1,0 +1,87 @@
+suite: job values
+templates:
+  - common.yaml
+set:
+  job:
+    my-task:
+      name: worker
+      restartPolicy: Never
+      image:
+        repository: busybox
+        tag: "1.36"
+tests:
+  - it: backoffLimit should be omitted when unset
+    asserts:
+      - documentIndex: &JobDocument 2
+        isKind:
+          of: Job
+      - documentIndex: *JobDocument
+        notExists:
+          path: spec.backoffLimit
+
+  - it: backoffLimit of zero should be rendered
+    set:
+      job.my-task.backoffLimit: 0
+    asserts:
+      - documentIndex: *JobDocument
+        equal:
+          path: spec.backoffLimit
+          value: 0
+
+  - it: container fields should be nested under the container
+    set:
+      job.my-task.resources:
+        limits:
+          cpu: "1"
+      job.my-task.command: ["sh", "-c"]
+      job.my-task.args: ["echo hi"]
+      job.my-task.env:
+        - name: FOO
+          value: bar
+    asserts:
+      - documentIndex: *JobDocument
+        equal:
+          path: spec.template.spec.containers[0].resources
+          value:
+            limits:
+              cpu: "1"
+      - documentIndex: *JobDocument
+        equal:
+          path: spec.template.spec.containers[0].command
+          value: ["sh", "-c"]
+      - documentIndex: *JobDocument
+        equal:
+          path: spec.template.spec.containers[0].args
+          value: ["echo hi"]
+      - documentIndex: *JobDocument
+        equal:
+          path: spec.template.spec.containers[0].env[0].name
+          value: FOO
+
+  - it: pod scheduling fields should be nested under the pod spec
+    set:
+      job.my-task.nodeSelector:
+        disk: ssd
+      job.my-task.affinity:
+        nodeAffinity: {}
+      job.my-task.tolerations:
+        - key: dedicated
+          operator: Exists
+    asserts:
+      - documentIndex: *JobDocument
+        equal:
+          path: spec.template.spec.nodeSelector
+          value:
+            disk: ssd
+      - documentIndex: *JobDocument
+        equal:
+          path: spec.template.spec.affinity
+          value:
+            nodeAffinity: {}
+      - documentIndex: *JobDocument
+        equal:
+          path: spec.template.spec.tolerations[0].key
+          value: dedicated
+      - documentIndex: *JobDocument
+        notExists:
+          path: spec.template.spec.disk
