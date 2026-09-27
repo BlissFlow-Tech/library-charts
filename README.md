@@ -50,6 +50,7 @@ If you need help:
 
 - This project was initially inspired by community efforts to DRY-ify Kubernetes Helm chart usage.
 - Forked and tailored by BlissFlow to meet professional standards.
+- Portions originate from the [k8s-at-home library-charts](https://github.com/k8s-at-home/library-charts) project; see [NOTICE](NOTICE).
 
 ---
 

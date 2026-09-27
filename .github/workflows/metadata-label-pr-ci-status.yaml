@@ -2,8 +2,8 @@ name: Label PRs based on CI status
 on:
   workflow_run:
     workflows:
-      - 'Pre-commit consistency check'
-      - 'Install and Lint'
+      - 'Pre‑commit consistency check'
+      - 'Charts: Lint and test'
     types:
       - completed
 
@@ -16,7 +16,7 @@ jobs:
   label-precommit:
     name: Label pre-commit status
     runs-on: ubuntu-latest
-    if: "${{ github.event.workflow.name == 'Pre-commit consistency check' }}"
+    if: "${{ github.event.workflow.name == 'Pre‑commit consistency check' }}"
     steps:
       - name: "Get information about the origin 'CI' run"
         uses: potiuk/get-workflow-origin@v1_3
@@ -46,7 +46,7 @@ jobs:
   label-lint-install:
     name: Label lint and install status
     runs-on: ubuntu-latest
-    if: "${{ github.event.workflow.name == 'Install and Lint' }}"
+    if: "${{ github.event.workflow.name == 'Charts: Lint and test' }}"
     steps:
       - name: "Get information about the origin 'CI' run"
         uses: potiuk/get-workflow-origin@v1_3
