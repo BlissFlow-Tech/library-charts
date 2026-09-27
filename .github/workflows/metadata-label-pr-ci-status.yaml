@@ -10,65 +10,31 @@ on:
 permissions:
   contents: read
   pull-requests: write
-  actions: read
+  issues: write
 
 jobs:
-  label-precommit:
-    name: Label pre-commit status
+  label:
+    name: Label CI status
     runs-on: ubuntu-latest
-    if: "${{ github.event.workflow.name == 'Pre‑commit consistency check' }}"
     steps:
-      - name: "Get information about the origin 'CI' run"
-        uses: potiuk/get-workflow-origin@v1_3
-        id: source-run-info
+      - uses: actions/github-script@v9
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          sourceRunId: ${{ github.event.workflow_run.id }}
+          script: |
+            const run = context.payload.workflow_run;
+            if (!['success', 'failure'].includes(run.conclusion)) return;
 
-      - name: Label precommit success
-        uses: andymckay/labeler@1.0.4
-        if: ${{ github.event.workflow_run.conclusion == 'success' }}
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          issue-number: ${{ steps.source-run-info.outputs.pullRequestNumber }}
-          add-labels: "precommit:ok"
-          remove-labels: "precommit:failed"
+            const prefix = run.name === 'Charts: Lint and test' ? 'lint' : 'precommit';
+            const ok = run.conclusion === 'success';
+            const add = `${prefix}:${ok ? 'ok' : 'failed'}`;
+            const remove = `${prefix}:${ok ? 'failed' : 'ok'}`;
 
-      - name: Label precommit failure
-        uses: andymckay/labeler@1.0.4
-        if: ${{ github.event.workflow_run.conclusion == 'failure' }}
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          issue-number: ${{ steps.source-run-info.outputs.pullRequestNumber }}
-          add-labels: "precommit:failed"
-          remove-labels: "precommit:ok"
-
-  label-lint-install:
-    name: Label lint and install status
-    runs-on: ubuntu-latest
-    if: "${{ github.event.workflow.name == 'Charts: Lint and test' }}"
-    steps:
-      - name: "Get information about the origin 'CI' run"
-        uses: potiuk/get-workflow-origin@v1_3
-        id: source-run-info
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          sourceRunId: ${{ github.event.workflow_run.id }}
-
-      - name: Label lint success
-        uses: andymckay/labeler@1.0.4
-        if: ${{ github.event.workflow_run.conclusion == 'success' }}
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          issue-number: ${{ steps.source-run-info.outputs.pullRequestNumber }}
-          add-labels: "lint:ok"
-          remove-labels: "lint:failed"
-
-      - name: Label lint failure
-        uses: andymckay/labeler@1.0.4
-        if: ${{ github.event.workflow_run.conclusion == 'failure' }}
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          issue-number: ${{ steps.source-run-info.outputs.pullRequestNumber }}
-          add-labels: "lint:failed"
-          remove-labels: "lint:ok"
+            // Empty for runs that weren't triggered by a same-repo PR
+            for (const pr of run.pull_requests) {
+              const issue_number = pr.number;
+              await github.rest.issues.addLabels({ ...context.repo, issue_number, labels: [add] });
+              try {
+                await github.rest.issues.removeLabel({ ...context.repo, issue_number, name: remove });
+              } catch (e) {
+                if (e.status !== 404) throw e;
+              }
+            }

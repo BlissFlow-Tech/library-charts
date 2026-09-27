@@ -67,7 +67,7 @@ Chart versions are managed by [release-please](https://github.com/googleapis/rel
    - `feat(common): ...` → minor release (4.10.2 → 4.11.0)
    - `feat(common)!: ...` or a `BREAKING CHANGE:` footer → major release
    - `docs:`, `chore:`, `ci:`, `test:` → no release
-2. After merge, release-please opens (or updates) a `chore: release common X.Y.Z` PR that bumps `Chart.yaml` and `CHANGELOG.md`.
+2. After merge, release-please opens (or updates) a `chore: release common X.Y.Z` PR that bumps `Chart.yaml` and `CHANGELOG.md`, regenerates the chart README and runs the required checks.
 3. Merging that release PR tags `common-X.Y.Z`, creates the GitHub release and publishes the chart to https://library-charts.blissflow.tech.
 
 Only commits touching `charts/stable/common/` count toward a chart release.
