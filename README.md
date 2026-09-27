@@ -1,7 +1,7 @@
 # BlissFlow Library Charts
 
 <p align="center">
-  <img src="https://blissflow.tech/_next/image?url=%2Flogo.jpg&w=1920&q=75" alt="BlissFlow Logo" width="250"/>
+  <img src=".github/assets/logo.svg" alt="BlissFlow Logo" width="250"/>
 </p>
 
 [![CI](https://github.com/blissflow-tech/library-charts/actions/workflows/charts-release.yaml/badge.svg)](https://github.com/blissflow-tech/library-charts/actions)
