@@ -1,6 +1,6 @@
 # common
 
-![Version: 4.10.3](https://img.shields.io/badge/Version-4.10.3-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square)
+![Version: 4.11.0](https://img.shields.io/badge/Version-4.11.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square)
 
 Function library for blissflow charts
 
