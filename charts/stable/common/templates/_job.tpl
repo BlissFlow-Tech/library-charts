@@ -24,10 +24,13 @@ spec:
   ttlSecondsAfterFinished: {{ . }}
   {{- end }}
   {{- with $job.parallelism }}
-  parallelism: {{ $job.parallelism }}
+  parallelism: {{ . }}
   {{- end }}
   {{- with $job.completions }}
   completions: {{ . }}
+  {{- end }}
+  {{- with $job.completionMode }}
+  completionMode: {{ . }}
   {{- end }}
   {{- with $job.manualSelector }}
   manualSelector: {{ . }}
