@@ -5,9 +5,9 @@ type: library
 version: 4.10.4
 kubeVersion: ">=1.16.0-0"
 keywords:
-- blissflow
-- common
+  - blissflow
+  - common
 home: https://github.com/blissflow-tech/library-charts/tree/main/charts/stable/common
 maintainers:
-- name: amos-85
-  email: contact@blissflow.tech
+  - name: amos-85
+    email: contact@blissflow.tech
