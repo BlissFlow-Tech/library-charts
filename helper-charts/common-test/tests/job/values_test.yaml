@@ -10,22 +10,6 @@ set:
         repository: busybox
         tag: "1.36"
 tests:
-    - it: completionMode should be omitted when unset
-      asserts:
-        - documentIndex: *JobDocument
-          notExists:
-            path: spec.completionMode
-
-    - it: completionMode should be rendered when set
-      set:
-        job.my-task.completionMode: Indexed
-        job.my-task.completions: 10
-        job.my-task.parallelism: 10
-      asserts:
-        - documentIndex: *JobDocument
-          equal:
-            path: spec.completionMode
-            value: Indexed
   - it: backoffLimit should be omitted when unset
     asserts:
       - documentIndex: &JobDocument 2
@@ -101,3 +85,28 @@ tests:
       - documentIndex: *JobDocument
         notExists:
           path: spec.template.spec.disk
+
+  - it: completionMode should be omitted when unset
+    asserts:
+      - documentIndex: *JobDocument
+        notExists:
+          path: spec.completionMode
+
+  - it: completionMode should be rendered when set
+    set:
+      job.my-task.completionMode: Indexed
+      job.my-task.completions: 10
+      job.my-task.parallelism: 10
+    asserts:
+      - documentIndex: *JobDocument
+        equal:
+          path: spec.completionMode
+          value: Indexed
+      - documentIndex: *JobDocument
+        equal:
+          path: spec.completions
+          value: 10
+      - documentIndex: *JobDocument
+        equal:
+          path: spec.parallelism
+          value: 10
