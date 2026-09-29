@@ -17,6 +17,12 @@ spec:
   {{- if not (kindIs "invalid" $job.backoffLimit) }}
   backoffLimit: {{ $job.backoffLimit }}
   {{- end }}
+  {{- if not (kindIs "invalid" $job.backoffLimitPerIndex) }}
+  backoffLimitPerIndex: {{ $job.backoffLimitPerIndex }}
+  {{- end }}
+  {{- if not (kindIs "invalid" $job.maxFailedIndexes) }}
+  maxFailedIndexes: {{ $job.maxFailedIndexes }}
+  {{- end }}
   {{- with $job.activeDeadlineSeconds }}
   activeDeadlineSeconds: {{ . }}
   {{- end }}
@@ -67,6 +73,10 @@ spec:
         {{- toYaml . | nindent 10 }}
       {{- end }}
       restartPolicy: {{ $job.restartPolicy }}
+      {{- with $job.initContainers }}
+      initContainers:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - name: {{ $job.name }}
         image: {{ index $job "image" "repository" }}:{{ index $job "image" "tag" }}
