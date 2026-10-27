@@ -44,10 +44,7 @@ spec:
   template:
     metadata:
       labels:
-      {{- include "common.labels.selectorLabels" $ | nindent 8 }}
-      {{- with $job.podLabels }}
-      {{- toYaml . | nindent 8 }}
-      {{- end }}
+      {{- include "common.labels.podLabels" (dict "context" $ "controller" $key "labels" $job.podLabels) | nindent 8 }}
       {{- with $job.podAnnotations }}
       annotations:
       {{- toYaml . | nindent 8 }}

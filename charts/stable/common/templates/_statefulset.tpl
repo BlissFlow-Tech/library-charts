@@ -39,10 +39,7 @@ spec:
         {{- . | nindent 8 }}
     {{- end }}
       labels:
-        {{- include "common.labels.selectorLabels" . | nindent 8 }}
-        {{- with .Values.podLabels }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
+        {{- include "common.labels.podLabels" (dict "context" . "controller" "main" "labels" .Values.podLabels) | nindent 8 }}
     spec:
       {{- include "common.controller.pod" . | nindent 6 }}
   volumeClaimTemplates:

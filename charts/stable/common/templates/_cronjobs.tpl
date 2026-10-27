@@ -37,10 +37,7 @@ spec:
       template:
         metadata:
           labels:
-            {{- include "common.labels.selectorLabels" $ | nindent 12 }}
-            {{- with $cronjob.podLabels }}
-              {{- toYaml . | nindent 12 }}
-            {{- end }}
+            {{- include "common.labels.podLabels" (dict "context" $ "controller" $key "labels" $cronjob.podLabels) | nindent 12 }}
         {{- with $cronjob.podAnnotations }}
           annotations:
             {{- toYaml . | nindent 12 }}
