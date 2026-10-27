@@ -1,0 +1,76 @@
+suite: controller selector
+templates:
+  - common.yaml
+set:
+  job:
+    my-task:
+      name: worker
+      restartPolicy: Never
+      image:
+        repository: busybox
+        tag: "1.36"
+tests:
+  - it: service should select only the main controller pods
+    asserts:
+      - documentIndex: &ServiceDocument 1
+        isKind:
+          of: Service
+      - documentIndex: *ServiceDocument
+        equal:
+          path: spec.selector
+          value:
+            app.kubernetes.io/controller: main
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/name: common-test
+
+  - it: main controller pods should carry the main controller label
+    set:
+      podLabels:
+        team: platform
+    asserts:
+      - documentIndex: &DeploymentDocument 0
+        isKind:
+          of: Deployment
+      - documentIndex: *DeploymentDocument
+        equal:
+          path: spec.selector.matchLabels
+          value:
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/name: common-test
+      - documentIndex: *DeploymentDocument
+        equal:
+          path: spec.template.metadata.labels
+          value:
+            app.kubernetes.io/controller: main
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/name: common-test
+            team: platform
+
+  - it: job pods should carry their own controller label
+    asserts:
+      - documentIndex: &JobDocument 2
+        isKind:
+          of: Job
+      - documentIndex: *JobDocument
+        equal:
+          path: spec.template.metadata.labels
+          value:
+            app.kubernetes.io/controller: my-task
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/name: common-test
+
+  - it: pod labels should not override selector labels
+    set:
+      job.my-task.podLabels:
+        app.kubernetes.io/instance: other
+        app.kubernetes.io/controller: main
+        team: platform
+    asserts:
+      - documentIndex: *JobDocument
+        equal:
+          path: spec.template.metadata.labels
+          value:
+            app.kubernetes.io/controller: my-task
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/name: common-test
+            team: platform

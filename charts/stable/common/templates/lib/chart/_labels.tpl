@@ -20,3 +20,8 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 app.kubernetes.io/name: {{ include "common.names.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
+
+{{/* Pod labels of a controller, selector labels take precedence */}}
+{{- define "common.labels.podLabels" -}}
+{{- toYaml (merge (include "common.labels.selectorLabels" .context | fromYaml) (dict "app.kubernetes.io/controller" .controller) (.labels | default dict)) }}
+{{- end -}}

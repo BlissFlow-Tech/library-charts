@@ -100,4 +100,5 @@ spec:
   {{- end }}
   selector:
     {{- include "common.labels.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/controller: main
 {{- end }}
