@@ -16,7 +16,9 @@ metadata:
   {{- end }}
 spec:
   revisionHistoryLimit: {{ .Values.controller.revisionHistoryLimit }}
+  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.controller.replicas }}
+  {{- end }}
   podManagementPolicy: {{ default "OrderedReady" .Values.controller.podManagementPolicy }}
   {{- $strategy := default "RollingUpdate" .Values.controller.strategy }}
   {{- if and (ne $strategy "OnDelete") (ne $strategy "RollingUpdate") }}

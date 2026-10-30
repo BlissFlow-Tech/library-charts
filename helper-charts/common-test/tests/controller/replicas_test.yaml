@@ -1,0 +1,59 @@
+suite: controller replicas
+templates:
+  - common.yaml
+tests:
+  - it: deployment sets replicas without autoscaling
+    set:
+      controller:
+        type: deployment
+        replicas: 2
+    asserts:
+      - documentIndex: &ControllerDoc 0
+        isKind:
+          of: Deployment
+      - documentIndex: *ControllerDoc
+        equal:
+          path: spec.replicas
+          value: 2
+
+  - it: deployment omits replicas with autoscaling
+    set:
+      controller:
+        type: deployment
+        replicas: 2
+      autoscaling.enabled: true
+    asserts:
+      - documentIndex: &ControllerDoc 0
+        isKind:
+          of: Deployment
+      - documentIndex: *ControllerDoc
+        notExists:
+          path: spec.replicas
+
+  - it: statefulset sets replicas without autoscaling
+    set:
+      controller:
+        type: statefulset
+        replicas: 2
+    asserts:
+      - documentIndex: &ControllerDoc 0
+        isKind:
+          of: StatefulSet
+      - documentIndex: *ControllerDoc
+        equal:
+          path: spec.replicas
+          value: 2
+
+  - it: statefulset omits replicas with autoscaling
+    set:
+      controller:
+        type: statefulset
+        replicas: 2
+      autoscaling.enabled: true
+    asserts:
+      - documentIndex: &ControllerDoc 0
+        isKind:
+          of: StatefulSet
+      - documentIndex: *ControllerDoc
+        notExists:
+          path: spec.replicas
