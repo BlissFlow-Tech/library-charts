@@ -2,6 +2,23 @@ apiVersion: v1
 entries:
   common:
   - apiVersion: v2
+    created: "2026-10-30T12:08:51.153246137Z"
+    description: Function library for blissflow charts
+    digest: d579db50d769336cb5847fd15fd207320e03dd8d7d67181c4cad7193f5b31f9c
+    home: https://github.com/blissflow-tech/library-charts/tree/main/charts/stable/common
+    keywords:
+    - blissflow
+    - common
+    kubeVersion: '>=1.16.0-0'
+    maintainers:
+    - email: contact@blissflow.tech
+      name: amos-85
+    name: common
+    type: library
+    urls:
+    - https://github.com/BlissFlow-Tech/library-charts/releases/download/common-4.13.1/common-4.13.1.tgz
+    version: 4.13.1
+  - apiVersion: v2
     created: "2026-10-27T17:15:34.097225932Z"
     description: Function library for blissflow charts
     digest: e6b308a5eb71262aa22abd68730d0e94a741f32a71f6d256ca58bef56b092b9f
@@ -171,4 +188,4 @@ entries:
     urls:
     - https://github.com/Amos-85/library-charts/releases/download/common-4.8.1/common-4.8.1.tgz
     version: 4.8.1
-generated: "2026-10-27T17:15:34.095918051Z"
+generated: "2026-10-30T12:08:51.151894963Z"
