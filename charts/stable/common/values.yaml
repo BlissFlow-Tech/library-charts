@@ -72,6 +72,7 @@ autoscaling:
   targetMemoryUtilizationPercentage:  # 80
   targetCPUAverageValue:  # 500m
   targetMemoryAverageValue:  # 1Gi
+  targetContainer:  # containername
 #  behavior:
 #    scaleUp:
 #      stabilizationWindowSeconds: 30
