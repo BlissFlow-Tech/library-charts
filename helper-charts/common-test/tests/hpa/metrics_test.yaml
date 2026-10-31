@@ -55,3 +55,33 @@ tests:
                 target:
                   type: AverageValue
                   averageValue: 1Gi
+
+  - it: container targets should pass
+    set:
+      autoscaling:
+        enabled: true
+        targetContainer: main
+        targetCPUUtilizationPercentage: 80
+        targetMemoryAverageValue: 1Gi
+    asserts:
+      - documentIndex: &HpaDoc 1
+        isKind:
+          of: HorizontalPodAutoscaler
+      - documentIndex: *HpaDoc
+        equal:
+          path: spec.metrics
+          value:
+            - type: ContainerResource
+              containerResource:
+                name: cpu
+                container: main
+                target:
+                  type: Utilization
+                  averageUtilization: 80
+            - type: ContainerResource
+              containerResource:
+                name: memory
+                container: main
+                target:
+                  type: AverageValue
+                  averageValue: 1Gi

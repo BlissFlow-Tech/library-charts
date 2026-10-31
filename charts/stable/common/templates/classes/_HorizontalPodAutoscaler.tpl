@@ -17,37 +17,28 @@ spec:
   minReplicas: {{ .Values.autoscaling.minReplicas | default 1 }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas | default 3 }}
   metrics:
-    {{- if .Values.autoscaling.targetCPUUtilizationPercentage }}
-    - type: Resource
-      resource:
-        name: cpu
+    {{- $container := .Values.autoscaling.targetContainer }}
+    {{- $metricType := ternary "ContainerResource" "Resource" (not (empty $container)) }}
+    {{- range (list
+      (list "cpu" "Utilization" .Values.autoscaling.targetCPUUtilizationPercentage)
+      (list "memory" "Utilization" .Values.autoscaling.targetMemoryUtilizationPercentage)
+      (list "cpu" "AverageValue" .Values.autoscaling.targetCPUAverageValue)
+      (list "memory" "AverageValue" .Values.autoscaling.targetMemoryAverageValue)) }}
+    {{- if index . 2 }}
+    - type: {{ $metricType }}
+      {{ $metricType | untitle }}:
+        name: {{ index . 0 }}
+        {{- with $container }}
+        container: {{ . }}
+        {{- end }}
         target:
-          type: Utilization
-          averageUtilization: {{ .Values.autoscaling.targetCPUUtilizationPercentage }}
+          type: {{ index . 1 }}
+          {{- if eq (index . 1) "Utilization" }}
+          averageUtilization: {{ index . 2 }}
+          {{- else }}
+          averageValue: {{ index . 2 }}
+          {{- end }}
     {{- end }}
-    {{- if .Values.autoscaling.targetMemoryUtilizationPercentage }}
-    - type: Resource
-      resource:
-        name: memory
-        target:
-          type: Utilization
-          averageUtilization: {{ .Values.autoscaling.targetMemoryUtilizationPercentage }}
-    {{- end }}
-    {{- if .Values.autoscaling.targetCPUAverageValue }}
-    - type: Resource
-      resource:
-        name: cpu
-        target:
-          type: AverageValue
-          averageValue: {{ .Values.autoscaling.targetCPUAverageValue }}
-    {{- end }}
-    {{- if .Values.autoscaling.targetMemoryAverageValue }}
-    - type: Resource
-      resource:
-        name: memory
-        target:
-          type: AverageValue
-          averageValue: {{ .Values.autoscaling.targetMemoryAverageValue }}
     {{- end }}
     {{- range .Values.autoscaling.externalMetrics }}
     - type: External
