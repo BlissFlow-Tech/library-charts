@@ -1,0 +1,57 @@
+suite: hpa metrics
+templates:
+  - common.yaml
+tests:
+  - it: utilization targets should pass
+    set:
+      autoscaling:
+        enabled: true
+        targetCPUUtilizationPercentage: 80
+        targetMemoryUtilizationPercentage: 70
+    asserts:
+      - documentIndex: &HpaDoc 1
+        isKind:
+          of: HorizontalPodAutoscaler
+      - documentIndex: *HpaDoc
+        equal:
+          path: spec.metrics
+          value:
+            - type: Resource
+              resource:
+                name: cpu
+                target:
+                  type: Utilization
+                  averageUtilization: 80
+            - type: Resource
+              resource:
+                name: memory
+                target:
+                  type: Utilization
+                  averageUtilization: 70
+
+  - it: average value targets should pass
+    set:
+      autoscaling:
+        enabled: true
+        targetCPUAverageValue: 500m
+        targetMemoryAverageValue: 1Gi
+    asserts:
+      - documentIndex: &HpaDoc 1
+        isKind:
+          of: HorizontalPodAutoscaler
+      - documentIndex: *HpaDoc
+        equal:
+          path: spec.metrics
+          value:
+            - type: Resource
+              resource:
+                name: cpu
+                target:
+                  type: AverageValue
+                  averageValue: 500m
+            - type: Resource
+              resource:
+                name: memory
+                target:
+                  type: AverageValue
+                  averageValue: 1Gi

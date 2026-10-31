@@ -33,6 +33,22 @@ spec:
           type: Utilization
           averageUtilization: {{ .Values.autoscaling.targetMemoryUtilizationPercentage }}
     {{- end }}
+    {{- if .Values.autoscaling.targetCPUAverageValue }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: AverageValue
+          averageValue: {{ .Values.autoscaling.targetCPUAverageValue }}
+    {{- end }}
+    {{- if .Values.autoscaling.targetMemoryAverageValue }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: AverageValue
+          averageValue: {{ .Values.autoscaling.targetMemoryAverageValue }}
+    {{- end }}
     {{- range .Values.autoscaling.externalMetrics }}
     - type: External
       external:
